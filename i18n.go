@@ -3,12 +3,12 @@ package i18n
 import (
 	"bytes"
 	"fmt"
+	"html/template"
+	"io"
+	"io/ioutil"
 	"strings"
 
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"io"
-	"html/template"
 )
 
 type locale struct {
@@ -42,11 +42,11 @@ func Parse(data []byte, trans map[string]interface{}) error {
 func SetupLocales(path, langs string) error {
 	var err error
 	defaultLocaleStore.langs = strings.Split(langs, "|")
-	defaultLocaleStore.store=make(map[string]locale)
+	defaultLocaleStore.store = make(map[string]locale)
 	for _, lang := range defaultLocaleStore.langs {
 		loc := locale{}
-		loc.trans= make(map[string]interface{})
-		err = ParseFile(path + "/" + localeFile(lang), loc.trans)
+		loc.trans = make(map[string]interface{})
+		err = ParseFile(path+"/"+localeFile(lang), loc.trans)
 		if err != nil {
 			return err
 		}
@@ -56,7 +56,7 @@ func SetupLocales(path, langs string) error {
 }
 
 func Translate(tpl string, lang string) string {
-	var buff = make([]byte,0)
+	var buff = make([]byte, 0)
 	b := bytes.NewBuffer(buff)
 	tmpl(b, tpl, defaultLocaleStore.store[lang].trans)
 	return b.String()
